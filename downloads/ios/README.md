@@ -2,17 +2,19 @@
 
 The complete iOS runner is included in [apps/mobile/ios](../../apps/mobile/ios/), including an iOS 15.5+ Podfile, usage descriptions, Xcode project, and shared scheme. Flutter sources and lockfiles are included in the repository.
 
-Apple builds currently use the repository's project-scoped CocoaPods configuration. The locked picker/cropper Swift packages require incompatible cropper versions; SwiftPM is disabled for this project. The unused file-picker media/audio modules are excluded, while custom document/image-file import and the separate gallery/camera picker remain configured.
+Apple builds use the repository's project-scoped CocoaPods configuration. The locked picker/cropper Swift packages require incompatible cropper versions; SwiftPM is disabled and its Xcode integration removed for this project. The unused file-picker media/audio modules are excluded, while custom document/image-file import and the separate gallery/camera picker remain configured. App and Pod simulator architectures explicitly match ML Kit's x86_64 slices; physical-device builds retain ARM64.
 
-The handoff machine has Command Line Tools but **no full Xcode/iOS SDK**, so it cannot produce Apple binaries locally. The [Downloadable mobile builds workflow](https://github.com/asjadyousaf05/Medi-Term-Explainer/actions/workflows/mobile-builds.yml) builds them on a macOS runner. Download binaries from a **successful** workflow's artifacts or the [repository Releases page](https://github.com/asjadyousaf05/Medi-Term-Explainer/releases). Adding a workflow alone is not evidence that a build passed; inspect the run/result.
+The handoff machine has Command Line Tools but **no full Xcode/iOS SDK**. Both Apple archives were instead compiled successfully by [the cloud Apple job for source commit `5db3bae`](https://github.com/asjadyousaf05/Medi-Term-Explainer/actions/runs/38287784253/job/114940191444), using Xcode 26.2 and Flutter 3.44.5. Download binaries from the [mobile demo release](https://github.com/asjadyousaf05/Medi-Term-Explainer/releases/tag/v1.0.1-demo), or the successful Apple job's `MediExplain-iOS` artifact. The [Downloadable mobile builds workflow](https://github.com/asjadyousaf05/Medi-Term-Explainer/actions/workflows/mobile-builds.yml) can rebuild them.
 
 | Output | Purpose | Installation boundary |
 | --- | --- | --- |
-| `MediExplain-ios-simulator-x86_64.zip` | Zipped `Runner.app` built for an Intel iOS Simulator | Not an iPhone app; architecture/runtime must match |
-| `MediExplain-ios-device-arm64-unsigned.zip` | Unsigned ARM64 iPhone app bundle | Requires Apple signing before installation |
+| [MediExplain-ios-simulator-x86_64.zip](https://github.com/asjadyousaf05/Medi-Term-Explainer/releases/download/v1.0.1-demo/MediExplain-ios-simulator-x86_64.zip) | Zipped `Runner.app` built for an Intel iOS Simulator | Not an iPhone app; architecture/runtime must match |
+| [MediExplain-ios-device-arm64-unsigned.zip](https://github.com/asjadyousaf05/Medi-Term-Explainer/releases/download/v1.0.1-demo/MediExplain-ios-device-arm64-unsigned.zip) | Unsigned ARM64 iPhone app bundle | Requires Apple signing before installation |
 | Signed `.ipa` | Device/TestFlight/App Store distribution | Must be built with your Apple signing/provisioning configuration; not supplied unsigned |
 
 Apple archives are release assets rather than Git-tracked generated directories. Downloads preserve app-bundle metadata through `ditto`, and include checksums/build metadata. The output's API URL is printed in its accompanying `build-info` JSON.
+
+Verified download sizes are approximately 65.0 MiB (Simulator) and 27.2 MiB (device). [Simulator checksums](SHA256SUMS-ios-simulator.txt), [device checksums](SHA256SUMS-ios-device.txt), [Simulator build metadata](build-info-ios-simulator.json), and [device build metadata](build-info-ios-device.json) are included here. Both archives passed ZIP integrity, checksum, bundle identifier, CPU/platform, and minimum-OS checks. They contain bundled reference content and no personal database.
 
 ## Run from source on a Mac
 

@@ -31,9 +31,9 @@ python3 scripts/dev.py install-android
 
 The helper chooses the device's APK, connects its API port to this laptop, installs, and opens the app. The connection uses USB/ADB port forwarding; repeat `connect-android` after reconnecting. The local-demo APK targets `http://127.0.0.1:8000/api/v1/` on the device. Guest features remain usable without the API connection.
 
-**iOS:** [source, build instructions, and download locations](downloads/ios/README.md). The GitHub **Downloadable mobile builds** workflow produces an Intel iOS Simulator `.app` archive and an unsigned device archive. An iPhone installation requires your Apple signing identity; an unsigned archive cannot be installed directly.
+**iOS download:** [Intel Simulator and unsigned iPhone archives](https://github.com/asjadyousaf05/Medi-Term-Explainer/releases/tag/v1.0.1-demo), with [build and installation instructions](downloads/ios/README.md). Both compiled successfully on Xcode 26.2. An iPhone installation requires your Apple signing identity; an unsigned archive cannot be installed directly.
 
-See the [complete laptop setup and troubleshooting guide](docs/RUN_ON_ANOTHER_LAPTOP.md), [downloadable releases](https://github.com/asjadyousaf05/Medi-Term-Explainer/releases), and [mobile build workflow](https://github.com/asjadyousaf05/Medi-Term-Explainer/actions/workflows/mobile-builds.yml). Local AI is optional and needs [Ollama setup and an enabled admin flag](docs/AI_FEATURES.md).
+See the [complete laptop setup and troubleshooting guide](docs/RUN_ON_ANOTHER_LAPTOP.md), [handoff verification](docs/GITHUB_HANDOFF.md), [downloadable releases](https://github.com/asjadyousaf05/Medi-Term-Explainer/releases), and [mobile build workflow](https://github.com/asjadyousaf05/Medi-Term-Explainer/actions/workflows/mobile-builds.yml). Local AI is optional and needs [Ollama setup and an enabled admin flag](docs/AI_FEATURES.md).
 
 ## Local start
 
