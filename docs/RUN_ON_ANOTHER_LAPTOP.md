@@ -9,7 +9,7 @@ This repository contains the mobile, API, admin, reference dataset, migrations, 
 | Admin and API | Git, Docker/Compose v2, Python 3.10+ | `python3 scripts/dev.py start` |
 | Install Android APK | Above, Android SDK Platform-Tools, Android phone/emulator | `python3 scripts/dev.py install-android` |
 | Develop Android app | Above, Flutter 3.44.5, Android SDK, complete NDK, JDK 17 | `python3 scripts/dev.py run-mobile` |
-| Run iOS Simulator | Mac, full Xcode, compatible simulator, CocoaPods; Flutter for source builds | [iOS instructions](../downloads/ios/README.md) |
+| Run iOS Simulator | Mac, full Xcode 26.1.1+, compatible simulator, CocoaPods; Flutter for source builds | [iOS instructions](../downloads/ios/README.md) |
 | Install on real iPhone | Mac/Xcode, Apple account and development signing, connected trusted device | Build/sign the source in Xcode |
 | Enable AI explanations | Running API, host Ollama and downloaded model, enabled admin flag | [AI setup](AI_FEATURES.md) |
 

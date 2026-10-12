@@ -16,7 +16,7 @@ Apple archives are release assets rather than Git-tracked generated directories.
 
 ## Run from source on a Mac
 
-Install full Xcode, required iOS platform/Simulator components, CocoaPods, and Flutter 3.44.5. Follow the official [Flutter iOS setup](https://docs.flutter.dev/platform-integration/ios/setup). Select the installed Xcode developer directory and complete its setup/licenses yourself. The app and OCR dependency require iOS 15.5 or newer.
+Install full **Xcode 26.1.1+ (26.2 used in CI)**, required iOS platform/Simulator components, CocoaPods, and Flutter 3.44.5. The locked connectivity plugin uses APIs absent from older Xcode SDKs, even when deploying to an older supported iOS release. Follow the official [Flutter iOS setup](https://docs.flutter.dev/platform-integration/ios/setup). Select the installed Xcode developer directory and complete its setup/licenses yourself. The app and OCR dependency require iOS 15.5 or newer.
 
 From the repository root, start the backend:
 

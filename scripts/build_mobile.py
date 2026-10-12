@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -43,7 +44,15 @@ def main():
     if args.platform != "android":
         if sys.platform != "darwin":
             parser.error("iOS builds require macOS, full Xcode, and CocoaPods.")
-        run("xcodebuild", "-version")
+        xcode_version = subprocess.check_output(["xcodebuild", "-version"], text=True)
+        print(xcode_version, end="")
+        version = tuple(
+            int(part) for part in xcode_version.splitlines()[0].split()[1].split(".")
+        )
+        if version < (26, 1, 1):
+            parser.error(
+                "The locked connectivity plugin requires Xcode 26.1.1+ (26.2 used in CI)."
+            )
     run(flutter, "pub", "get", "--enforce-lockfile")
     defines = [
         "--dart-define=APP_ENV=development",
@@ -121,6 +130,7 @@ def main():
                 "api_base_url": args.api_base_url,
                 "app_environment": "development",
                 "flutter_version": flutter_version,
+                "source_commit": os.environ.get("GITHUB_SHA"),
                 "notes": notes,
                 "files": [path.name for path in files],
             },

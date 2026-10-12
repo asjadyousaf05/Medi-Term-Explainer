@@ -6,7 +6,7 @@
 - Flutter stable with Dart 3.12 or newer; Android SDK and JDK 17 for Android builds.
 - A complete Android NDK installation is required, including its compiler and JNI build support. A successful Gradle build alone does not verify native-library packaging; `--android` also inspects the APK for required JNI and SQLite libraries.
 - Python 3.12 or newer with `uv`, and Node.js 22 with npm for checks outside Docker.
-- Chrome or Playwright Chromium for browser verification. iOS requires full Xcode, CocoaPods, and signing.
+- Chrome or Playwright Chromium for browser verification. iOS requires full Xcode 26.1.1+ (26.2 in CI), CocoaPods, and device signing where applicable.
 
 Run from the project root:
 
