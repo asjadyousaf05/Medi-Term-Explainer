@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - run: uv sync --group dev --locked
+      - run: uv run ruff format --check app tests alembic
+      - run: uv run ruff check app tests alembic
+      - run: uv run mypy app
+      - run: uv run pytest
+      - run: |
+          database_directory="$(mktemp -d)"
+          trap 'rm -rf "$database_directory"' EXIT
+          MEDIEXPLAIN_DATABASE_URL="sqlite+pysqlite:///$database_directory/schema.db" uv run alembic upgrade head
+          MEDIEXPLAIN_DATABASE_URL="sqlite+pysqlite:///$database_directory/schema.db" uv run alembic check
+      - run: docker build -t mediexplain-api:test .
+
+  admin:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/admin/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: docker build -t mediexplain-admin:test .
+
+  flutter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.5'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build apk --debug
+      - run: python3 ../../scripts/check-android-apk.py build/app/outputs/flutter-apk/app-debug.apk
+      - run: flutter build appbundle --release --dart-define=APP_ENV=production --dart-define=API_BASE_URL=https://api.invalid.example/api/v1/
+
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+
+  postgres-schema:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: mediexplain
+          POSTGRES_PASSWORD: isolated-ci-password
+          POSTGRES_DB: mediexplain
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mediexplain"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      MEDIEXPLAIN_DATABASE_URL: postgresql+psycopg://mediexplain:isolated-ci-password@localhost:5432/mediexplain
+    defaults:
+      run:
+        working-directory: services/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - run: uv sync --locked --no-dev
+      - run: uv run alembic upgrade head
+      - run: uv run alembic check
+      - run: uv run alembic downgrade 98e5f4666626
+      - run: uv run alembic upgrade head
+      - run: uv run alembic check
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/admin/package-lock.json
+      - run: uv sync --group dev --locked
+        working-directory: services/api
+      - run: npm ci
+        working-directory: apps/admin
+      - run: npx playwright install --with-deps chromium
+        working-directory: apps/admin
+      - run: npm run test:e2e
+        working-directory: apps/admin
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-failures
+          path: apps/admin/test-results

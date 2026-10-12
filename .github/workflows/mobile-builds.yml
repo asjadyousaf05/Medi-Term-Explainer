@@ -1,0 +1,90 @@
+name: Downloadable mobile builds
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/mobile/**'
+      - 'scripts/build_mobile.py'
+      - 'scripts/check-android-apk.py'
+      - '.github/workflows/mobile-builds.yml'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Optional existing GitHub Release tag to attach downloads to'
+        type: string
+        default: ''
+      api_base_url:
+        description: 'Local demo API URL, ending /api/v1/'
+        type: string
+        default: 'http://127.0.0.1:8000/api/v1/'
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.5'
+          channel: stable
+          cache: true
+      - name: Build and inspect installable demo APKs
+        env:
+          API_BASE_URL: ${{ inputs.api_base_url || 'http://127.0.0.1:8000/api/v1/' }}
+        run: python3 scripts/build_mobile.py android --api-base-url "$API_BASE_URL"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MediExplain-Android
+          path: downloads/android/
+          retention-days: 30
+
+  ios:
+    # ML Kit 9 includes x86_64 simulator slices. Do not relabel device binaries.
+    runs-on: macos-15-intel
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.5'
+          channel: stable
+          cache: true
+      - name: Build iOS Simulator app and unsigned device app
+        env:
+          API_BASE_URL: ${{ inputs.api_base_url || 'http://127.0.0.1:8000/api/v1/' }}
+        run: |
+          python3 scripts/build_mobile.py ios-simulator --api-base-url "$API_BASE_URL"
+          python3 scripts/build_mobile.py ios-device --api-base-url "$API_BASE_URL"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MediExplain-iOS
+          path: downloads/ios/
+          retention-days: 30
+
+  attach-to-release:
+    if: github.event_name == 'workflow_dispatch' && inputs.release_tag != ''
+    needs: [android, ios]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Attach artifacts to the requested existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          gh release view "$RELEASE_TAG"
+          find artifacts -type f \( -name '*.apk' -o -name '*.zip' -o -name 'SHA256SUMS*' -o -name 'build-info*' \) -exec gh release upload "$RELEASE_TAG" {} --clobber \;

@@ -1,0 +1,63 @@
+.DS_Store
+.idea/
+.vscode/
+
+# Flutter / Dart
+apps/mobile/.dart_tool/
+apps/mobile/.flutter-plugins*
+apps/mobile/.packages
+apps/mobile/build/
+apps/mobile/coverage/
+apps/mobile/android/.gradle/
+apps/mobile/android/local.properties
+apps/mobile/ios/Pods/
+apps/mobile/ios/.symlinks/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+
+# Environment and local databases
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite
+*.sqlite3
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+coverage/
+playwright-report/
+test-results/
+npm-debug.log*
+
+# Local operator notes may contain secrets
+CREDENTIALS.md
+
+# Signing material and local backups
+*.pem
+*.p12
+*.p8
+*.mobileprovision
+*.keystore
+*.jks
+key.properties
+*.db-*
+*.sqlite-*
+*.sqlite3-*
+*.dump
+*.sql.gz
+
+# Apple archives are distributed through GitHub Releases.
+downloads/ios/*.zip
+downloads/ios/*.ipa
+*.xcarchive/
+*.dSYM/

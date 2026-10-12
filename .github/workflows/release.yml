@@ -1,0 +1,25 @@
+name: Controlled release
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [staging, production]
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build immutable application images
+        run: |
+          docker build -t mediexplain-api:${{ github.sha }} services/api
+          docker build -t mediexplain-admin:${{ github.sha }} apps/admin
+      - name: Promotion boundary
+        run: echo "Images built for the protected environment. Registry publish/deploy is intentionally environment-specific and requires approval."
