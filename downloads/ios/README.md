@@ -2,6 +2,8 @@
 
 The complete iOS runner is included in [apps/mobile/ios](../../apps/mobile/ios/), including an iOS 15.5+ Podfile, usage descriptions, Xcode project, and shared scheme. Flutter sources and lockfiles are included in the repository.
 
+Apple builds currently use the repository's project-scoped CocoaPods configuration. The locked picker/cropper Swift packages require incompatible cropper versions; SwiftPM is disabled for this project. The unused file-picker media/audio modules are excluded, while custom document/image-file import and the separate gallery/camera picker remain configured.
+
 The handoff machine has Command Line Tools but **no full Xcode/iOS SDK**, so it cannot produce Apple binaries locally. The [Downloadable mobile builds workflow](https://github.com/asjadyousaf05/Medi-Term-Explainer/actions/workflows/mobile-builds.yml) builds them on a macOS runner. Download binaries from a **successful** workflow's artifacts or the [repository Releases page](https://github.com/asjadyousaf05/Medi-Term-Explainer/releases). Adding a workflow alone is not evidence that a build passed; inspect the run/result.
 
 | Output | Purpose | Installation boundary |

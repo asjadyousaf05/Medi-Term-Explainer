@@ -1,6 +1,12 @@
 platform :ios, '15.5'
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
+# Files use FileType.custom; gallery/camera use image_picker. Excluding the
+# unused media/audio picker avoids DKImagePickerController's old cropper pin.
+Pod::PICKER_MEDIA = false
+Pod::PICKER_AUDIO = false
+Pod::PICKER_DOCUMENT = true
+
 project 'Runner', { 'Debug' => :debug, 'Profile' => :release, 'Release' => :release }
 
 def flutter_root

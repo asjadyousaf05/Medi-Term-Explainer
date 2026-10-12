@@ -93,6 +93,11 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
+  # The current picker/cropper Swift packages require conflicting cropper
+  # versions. Use the included CocoaPods configuration for Apple builds.
+  config:
+    enable-swift-package-manager: false
+
   generate: true
   assets:
     - assets/terminology/starter_dataset_v1.json

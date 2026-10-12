@@ -66,7 +66,7 @@ def show_urls(args):
     print(f"Admin:    http://localhost:{admin}")
     print(f"API docs: http://localhost:{api}/docs")
     print(f"Mailpit:  http://localhost:{mail}")
-    print("Create your admin: python3 scripts/dev.py admin")
+    print(f"Create your admin: python3 scripts/dev.py --project {args.project} admin")
 
 
 def adb_executable():
@@ -119,7 +119,7 @@ def connect_android(args):
     adb, serial = android_device(args)
     port = service_port(args, "api", 8000)
     run([adb, "-s", serial, "reverse", "tcp:8000", f"tcp:{port}"])
-    print(f"Connected {serial}: app port 8000 → laptop API port {port}.")
+    print(f"Connected {serial}: app port 8000 -> laptop API port {port}.")
     return adb, serial
 
 
@@ -231,12 +231,15 @@ def main():
                     "-s",
                     serial,
                     "shell",
-                    "monkey",
-                    "-p",
-                    "com.mediexplain.mediexplain",
+                    "am",
+                    "start",
+                    "-W",
+                    "-a",
+                    "android.intent.action.MAIN",
                     "-c",
                     "android.intent.category.LAUNCHER",
-                    "1",
+                    "-n",
+                    "com.mediexplain.mediexplain/.MainActivity",
                 ]
             )
     elif args.command == "run-mobile":
