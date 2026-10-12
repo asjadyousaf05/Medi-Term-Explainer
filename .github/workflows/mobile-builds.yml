@@ -61,12 +61,14 @@ jobs:
           flutter-version: '3.44.5'
           channel: stable
           cache: true
-      - name: Build iOS Simulator app and unsigned device app
+      - name: Build Intel iOS Simulator app
         env:
           API_BASE_URL: ${{ inputs.api_base_url || 'http://127.0.0.1:8000/api/v1/' }}
-        run: |
-          python3 scripts/build_mobile.py ios-simulator --api-base-url "$API_BASE_URL"
-          python3 scripts/build_mobile.py ios-device --api-base-url "$API_BASE_URL"
+        run: python3 scripts/build_mobile.py ios-simulator --verbose --api-base-url "$API_BASE_URL"
+      - name: Build unsigned ARM64 iPhone app
+        env:
+          API_BASE_URL: ${{ inputs.api_base_url || 'http://127.0.0.1:8000/api/v1/' }}
+        run: python3 scripts/build_mobile.py ios-device --verbose --api-base-url "$API_BASE_URL"
       - uses: actions/upload-artifact@v4
         with:
           name: MediExplain-iOS

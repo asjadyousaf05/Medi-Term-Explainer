@@ -1,2 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+// Physical-device builds retain arm64; Simulator builds match ML Kit.
+ARCHS[sdk=iphonesimulator*] = x86_64
+EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64 i386

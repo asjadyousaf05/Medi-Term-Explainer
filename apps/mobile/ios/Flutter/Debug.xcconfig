@@ -1,2 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
+// The locked ML Kit pods only provide x86_64 Simulator binaries.
+ARCHS[sdk=iphonesimulator*] = x86_64
+EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64 i386

@@ -24,6 +24,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("platform", choices=("android", "ios-simulator", "ios-device"))
     parser.add_argument("--api-base-url", default="http://127.0.0.1:8000/api/v1/")
+    parser.add_argument(
+        "--verbose", action="store_true", help="Print native build diagnostics"
+    )
     args = parser.parse_args()
     url = urlsplit(args.api_base_url)
     if (
@@ -58,6 +61,8 @@ def main():
         "--dart-define=APP_ENV=development",
         f"--dart-define=API_BASE_URL={args.api_base_url}",
     ]
+    if args.verbose:
+        defines.append("--verbose")
     files = []
     if args.platform == "android":
         run(
